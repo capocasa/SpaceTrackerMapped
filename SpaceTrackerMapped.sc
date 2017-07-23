@@ -176,6 +176,7 @@ SpaceLinemapMapped : SpaceLinemap {
             start = line[ch+1]; // ch is output channel index, buffers have additional time channel at beginning, so ch+1
             frames = controlrate * line[0];
             path = base +/+ count ++ $. ++ soundExtension;
+            "read ch % count % of length % to % with value %".format(i,count,line[0],path,line[ch+1]).postln;
             b.write(path, headerFormat, sampleFormat, frames.asInteger, start.asInteger);
             line[ch+1] = count;
             write.writeData(line);
@@ -185,6 +186,7 @@ SpaceLinemapMapped : SpaceLinemap {
           read.close;
           write.close;
           "mv % %".format(write.path, read.path).systemCmd;
+          "written % and moved to %".format(write.path, read.path).postln;
         };
       };
       //PathName(base).filesDo {|path|
