@@ -189,11 +189,6 @@ SpaceLinemapMapped : SpaceLinemap {
           "written % and moved to %".format(write.path, read.path).postln;
         };
       };
-      //PathName(base).filesDo {|path|
-      //  if (path.extension == soundExtension) {
-      //    SoundFile.s_convert(path.fullPath, controlrate);
-      //  };
-      //};
       server.sync;
       this.writeTree;
       File.use(this.meta(base), "w", {|f|
