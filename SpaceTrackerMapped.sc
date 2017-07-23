@@ -172,7 +172,7 @@ SpaceLinemapMapped : SpaceLinemap {
           write.sampleFormat = read.sampleFormat;
           write.openWrite;
           line = FloatArray.newClear(read.numChannels);
-          while { read.readData(line); line.size > 0 } {
+          while { read.readData(line); line.size > 0 && { line[0] > 0 } } {
             start = line[ch+1]; // ch is output channel index, buffers have additional time channel at beginning, so ch+1
             frames = controlrate * line[0];
             path = base +/+ count ++ $. ++ soundExtension;
