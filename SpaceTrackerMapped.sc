@@ -139,65 +139,6 @@ SpaceLinemapMapped : SpaceLinemap {
     arg treefile, bufspec, frames;
     ^super.new.init(treefile).fromMapped(bufspec, frames);
   }
-  fromMapped {
-    arg bufspec, argFrames;
-    var buffer, controlrate, base, count,server;
-    frames = argFrames;
-    server=bufspec[0][0].server;
-
-    controlrate = server.sampleRate / server.options.blockSize;
-
-    base = this.base;
-
-    count = 1;
-
-    forkIfNeeded {
-      this.fromBufferInit(bufspec.collect {|bufspecch|bufspecch[0]});
-      //frames.postln;
-      server.sync;
-      if (frames.asArray.every({|e|e==1})) {
-        "No frames, not saving %".format(tree.path).warn;
-        this.yield;
-      };
-      base.mkdir;
-      bufspec.do { |bufspecch, i|
-        var read, write, line;
-        bufspecch[1..].pairsDo {|ch, b|
-          var read, write, line, path, frames, start, file;
-          read = SoundFile(this.soundFileName(i));
-          read.openRead;
-          write = SoundFile(tmp.file(soundExtension));
-          write.numChannels = read.numChannels;
-          write.headerFormat = read.headerFormat;
-          write.sampleFormat = read.sampleFormat;
-          write.openWrite;
-          line = FloatArray.newClear(read.numChannels);
-          while { read.readData(line); line.size > 0 && { line[0] > 0 } } {
-            start = line[ch+1]; // ch is output channel index, buffers have additional time channel at beginning, so ch+1
-            frames = controlrate * line[0];
-            path = base +/+ count ++ $. ++ soundExtension;
-            "read ch % count % of length % to % with value %".format(i,count,line[0],path,line[ch+1]).postln;
-            b.write(path, headerFormat, sampleFormat, frames.asInteger, start.asInteger);
-            line[ch+1] = count;
-            write.writeData(line);
-            count=count+1;
-            b.server.sync; // Without this, longer passages crash the server
-          };
-          read.close;
-          write.close;
-          "mv % %".format(write.path, read.path).systemCmd;
-          "written % and moved to %".format(write.path, read.path).postln;
-        };
-      };
-      server.sync;
-      this.writeTree;
-      File.use(this.meta(base), "w", {|f|
-        var channels;
-        channels = bufspec[0][1..].clump(2).collect {|c|c[0]};
-        f.write(channels.join(" "));
-      });
-    }
-  }
   isMapped {
     ^PathName(this.base).isFolder;
   }
