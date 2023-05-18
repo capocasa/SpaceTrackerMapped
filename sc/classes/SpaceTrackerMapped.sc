@@ -1,7 +1,7 @@
 
 // This adds support for recording mapped controls
 
-RecordBufM {
+RecordSpaceTrackerMapped {
   *ar {
     arg inputArray, bufspec=#[0], run=1.0, doneAction=0;
     ^this.out(\ar, inputArray, bufspec, run, doneAction);
@@ -16,7 +16,7 @@ RecordBufM {
     arg method, inputArray, bufspec, run, doneAction;
 
     if (inputArray.size != bufspec.size) {
-      RecordBufMError("inputArray size is %, but bufspec size is %, need be equal".format(inputArray.size, bufspec.size)).throw;
+      RecordSpaceTrackerMappedError("inputArray size is %, but bufspec size is %, need be equal".format(inputArray.size, bufspec.size)).throw;
     };
 
     inputArray = inputArray.copy;
@@ -35,9 +35,9 @@ RecordBufM {
     ^RecordBufT.perform(method,inputArray, bufspec.collect{|bufspecch|bufspecch[0]}, run, doneAction);
   }
 }
-RecordBufMError : Error {}
+RecordSpaceTrackerMappedError : Error {}
 
-PlayBufM {
+PlaySpaceTrackerMapped {
  
   *ar {
     arg bufspec = #[0], rate=1.0, trigger=1.0, startPos=0.0, doneAction=0;
